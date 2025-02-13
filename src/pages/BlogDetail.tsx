@@ -1,11 +1,11 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Calendar, Clock, User, Tag } from 'lucide-react';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 // Code Preview Component
 const CodePreview = ({ code, language }) => {
-  const lines = code.trim().split('\n');
-  
   return (
     <div className="rounded-lg overflow-hidden bg-zinc-900 my-6">
       {/* Header */}
@@ -17,37 +17,51 @@ const CodePreview = ({ code, language }) => {
         </div>
         <span className="text-sm text-zinc-400">{language}</span>
       </div>
-      
+
       {/* Code Content */}
       <div className="p-4 font-mono text-sm overflow-x-auto">
-        <table className="w-full border-collapse">
-          <tbody>
-            {lines.map((line, i) => (
-              <tr key={i} className="leading-6">
-                <td className="pr-4 text-right text-zinc-600 select-none w-12">
-                  {i + 1}
-                </td>
-                <td className="text-amber-50 whitespace-pre">
-                  {line || '\u00A0'}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <SyntaxHighlighter
+          language={language}
+          style={oneDark}
+          customStyle={{ background: "transparent", padding: 0, margin: 0 }}
+          showLineNumbers
+          wrapLines
+        >
+          {code.trim()}
+        </SyntaxHighlighter>
       </div>
     </div>
   );
 };
 
-// Process content to transform code blocks into editor views
+// YouTube Video Preview Component
+const VideoPreview = ({ embedUrl }) => {
+  const videoId = embedUrl.match(/embed\/([\w-]+)/)?.[1];
+
+  if (!videoId) return null;
+
+  return (
+    <div className="my-6">
+      <div className="relative aspect-video w-full rounded-lg overflow-hidden">
+        <iframe
+          src={embedUrl}
+          title="YouTube video player"
+          className="absolute top-0 left-0 w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    </div>
+  );
+};
+
+// Process content to transform code blocks and videos into previews
 const ProcessedContent = ({ content }) => {
-  // Split content into parts, separating code blocks from regular content
   const parseContent = () => {
     const parts = [];
     const temp = document.createElement('div');
     temp.innerHTML = content;
 
-    let currentIndex = 0;
     temp.childNodes.forEach((node) => {
       if (node.nodeName === 'PRE') {
         const code = node.querySelector('code');
@@ -55,20 +69,24 @@ const ProcessedContent = ({ content }) => {
           const language = Array.from(code.classList)
             .find(cls => cls.startsWith('language-'))
             ?.replace('language-', '') || 'plaintext';
-          
+
           parts.push({
             type: 'code',
             content: code.textContent,
             language
           });
         }
+      } else if (node.nodeName === 'IFRAME' && node.src?.includes('youtube.com/embed')) {
+        parts.push({
+          type: 'video',
+          embedUrl: node.src
+        });
       } else {
         parts.push({
           type: 'html',
           content: node.outerHTML || node.textContent
         });
       }
-      currentIndex++;
     });
 
     return parts;
@@ -82,6 +100,8 @@ const ProcessedContent = ({ content }) => {
         <React.Fragment key={index}>
           {part.type === 'code' ? (
             <CodePreview code={part.content} language={part.language} />
+          ) : part.type === 'video' ? (
+            <VideoPreview embedUrl={part.embedUrl} />
           ) : (
             <div dangerouslySetInnerHTML={{ __html: part.content }} />
           )}
@@ -103,6 +123,17 @@ const blogData = {
       <h2>Introduction</h2>
       <p>Clean code is not just about making your code work; it's about making it work elegantly and efficiently. In this article, we'll explore the principles that make code truly clean and maintainable.</p>
 
+      <h2>Video Tutorial</h2>
+      <iframe 
+        width="560" 
+        height="315" 
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+        title="Clean Code Tutorial" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+      ></iframe>
+
       <h2>The Principles of Clean Code</h2>
       <p>Clean code follows several key principles that help make it more readable, maintainable, and efficient. Let's explore these principles in detail.</p>
 
@@ -119,51 +150,28 @@ const currentDate = new Date();
 const timestamp = currentDate.getTime();
       </code></pre>
 
-      <h3>2. Small Functions</h3>
-      <p>Functions should do one thing, do it well, and do it only. This makes code easier to test, understand, and maintain.</p>
+      <h3>Another PHP Code</h3>
+      <pre><code class="language-php">
+<?php
+// Bad naming
+$myDate = new DateTime();
+$myTime = $myDate->format('H:i:s');
 
-      <pre><code class="language-javascript">
-// Bad: Function doing multiple things
-function validateAndSaveUser(userData) {
-  if (!userData.name || !userData.email) {
-    throw new Error('Invalid data');
-  }
-  
-  if (!userData.email.includes('@')) {
-    throw new Error('Invalid email');
-  }
-  
-  database.save(userData);
-  sendWelcomeEmail(userData.email);
-}
-
-// Good: Separated concerns
-function validateUserData(userData) {
-  if (!userData.name || !userData.email) {
-    throw new Error('Invalid data');
-  }
-}
-
-function validateEmail(email) {
-  if (!email.includes('@')) {
-    throw new Error('Invalid email');
-  }
-}
-
-function saveUser(userData) {
-  validateUserData(userData);
-  validateEmail(userData.email);
-  database.save(userData);
-}
-
-function onboardUser(userData) {
-  saveUser(userData);
-  sendWelcomeEmail(userData.email);
-}
+// Good naming
+$date = new DateTime();
+$time = $date->format('H:i:s');
       </code></pre>
 
-      <h3>3. Comments</h3>
-      <p>The best comment is the code that documents itself. When you write clean code, you shouldn't need many comments to explain what the code does.</p>
+      <h3>Another Tutorial</h3>
+      <iframe 
+        width="560" 
+        height="315" 
+        src="https://www.youtube.com/embed/dQw4w9WgXcQ" 
+        title="Advanced Clean Code" 
+        frameborder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+        allowfullscreen
+      ></iframe>
     `
   }
 };
@@ -209,7 +217,7 @@ export default function BlogDetail() {
       {/* Featured Image */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12">
         <div className="rounded-lg overflow-hidden border-4 border-amber-400/20">
-          <img 
+          <img
             src={post.image}
             alt={post.title}
             className="w-full h-64 object-cover"
