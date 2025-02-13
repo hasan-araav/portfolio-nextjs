@@ -1,11 +1,23 @@
+import { motion } from "framer-motion";
 import { Cpu, Code2, Terminal, Sparkles, Brain } from "lucide-react";
 
 export default function Hero() {
+  // Floating animation
+  const floatAnimation = {
+    initial: { y: 0 },
+    animate: {
+      y: [0, -15, 0],
+      transition: {
+        duration: 3,
+        repeat: Infinity,
+        repeatType: "reverse",
+        ease: "easeInOut",
+      },
+    },
+  };
+
   return (
-    <header
-      id="home"
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    >
+    <header id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background layers */}
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
@@ -14,8 +26,7 @@ export default function Hero() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(#f59e0b22 1px, transparent 1px), linear-gradient(90deg, #f59e0b22 1px, transparent 1px)",
+            backgroundImage: "linear-gradient(#f59e0b22 1px, transparent 1px), linear-gradient(90deg, #f59e0b22 1px, transparent 1px)",
             backgroundSize: "50px 50px",
             animation: "grid 20s linear infinite",
           }}
@@ -25,29 +36,46 @@ export default function Hero() {
       {/* Content */}
       <div className="relative text-center space-y-12 p-8 max-w-5xl mx-auto">
         {/* Floating elements */}
-        <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 animate-float opacity-30">
+        <motion.div
+          className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 opacity-30"
+          variants={floatAnimation}
+          initial="initial"
+          animate="animate"
+        >
           <Cpu className="w-12 h-12 text-amber-400" />
-        </div>
-        <div
-          className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 animate-float opacity-30"
-          style={{ animationDelay: "2s" }}
+        </motion.div>
+        <motion.div
+          className="absolute top-1/3 right-1/4 translate-x-1/2 -translate-y-1/2 opacity-30"
+          variants={floatAnimation}
+          initial="initial"
+          animate="animate"
+          transition={{ delay: 1 }}
         >
           <Code2 className="w-12 h-12 text-amber-400" />
-        </div>
-        <div
-          className="absolute bottom-1/3 left-1/3 -translate-x-1/2 translate-y-1/2 animate-float opacity-30"
-          style={{ animationDelay: "4s" }}
+        </motion.div>
+        <motion.div
+          className="absolute bottom-1/3 left-1/3 -translate-x-1/2 translate-y-1/2 opacity-30"
+          variants={floatAnimation}
+          initial="initial"
+          animate="animate"
+          transition={{ delay: 2 }}
         >
           <Terminal className="w-12 h-12 text-amber-400" />
-        </div>
+        </motion.div>
 
         {/* Main content */}
         <div className="space-y-8">
           <div className="inline-block relative">
             <div className="absolute inset-0 bg-amber-400/20 blur-2xl rounded-full"></div>
-            <div className="relative p-4 border-4 border-amber-400 rounded-2xl bg-zinc-900/80 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
+            <motion.div
+              className="relative p-4 border-4 border-amber-400 rounded-2xl bg-zinc-900/80 backdrop-blur-sm transform hover:scale-105 transition-transform duration-300"
+              variants={floatAnimation}
+              initial="initial"
+              animate="animate"
+              transition={{ duration: 4 }}
+            >
               <Terminal className="w-20 h-20 text-amber-400" />
-            </div>
+            </motion.div>
           </div>
 
           <div className="animate-fade-in-up space-y-6">

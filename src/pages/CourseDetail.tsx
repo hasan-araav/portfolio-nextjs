@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Clock, BookOpen, GraduationCap, Users, CheckCircle2 } from 'lucide-react';
 
@@ -14,12 +14,12 @@ const courseData = {
     students: 1234,
     rating: 4.8,
     chapters: [
-      "Introduction to Modern React",
-      "Hooks Deep Dive",
-      "State Management Patterns",
-      "Performance Optimization",
-      "Testing Best Practices",
-      "Advanced Patterns",
+      { title: "Introduction to Modern React", details: "Learn the fundamentals of React and its ecosystem" },
+      { title: "Hooks Deep Dive", details: "Master React Hooks and their applications" },
+      { title: "State Management Patterns", details: "Explore different state management patterns in React" },
+      { title: "Performance Optimization", details: "Optimize your React application for better performance" },
+      { title: "Testing Best Practices", details: "Learn best practices for testing your React application" },
+      { title: "Advanced Patterns", details: "Explore advanced patterns and techniques in React" },
     ],
     features: [
       "24/7 Support",
@@ -36,8 +36,14 @@ export default function CourseDetail() {
 
   if (!course) return <div>Course not found</div>;
 
+  const [openSection, setOpenSection] = useState<number | null>(null);
+
+  const toggleSection = (index: number) => {
+    setOpenSection(openSection === index ? null : index);
+  };
+
   return (
-    <div className="pt-16 bg-amber-50">
+    <div className=" bg-amber-50">
       {/* Hero Section */}
       <div className="bg-zinc-900 text-amber-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
@@ -67,7 +73,7 @@ export default function CourseDetail() {
               </div>
             </div>
             <div className="rounded-lg overflow-hidden border-4 border-amber-400/20">
-              <img 
+              <img
                 src={course.image}
                 alt={course.title}
                 className="w-full h-full object-cover"
@@ -86,11 +92,23 @@ export default function CourseDetail() {
               <h2 className="text-2xl font-bold mb-6">Course Content</h2>
               <div className="space-y-4">
                 {course.chapters.map((chapter, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 bg-white rounded-lg shadow-md">
-                    <span className="w-8 h-8 flex items-center justify-center bg-amber-400 text-zinc-900 rounded-full font-bold">
-                      {index + 1}
-                    </span>
-                    <span className="font-medium">{chapter}</span>
+                  <div key={index}>
+                    <button
+                      onClick={() => toggleSection(index)}
+                      className={`flex items-center gap-4 p-4 bg-white shadow-md w-full ${openSection === index ? 'rounded-t-lg' : 'rounded-lg'
+                        }`}
+                    >
+
+                      <span className="w-8 h-8 flex items-center justify-center bg-amber-400 text-zinc-900 rounded-full font-bold">
+                        {index + 1}
+                      </span>
+                      <span className="font-medium">{chapter.title}</span>
+                    </button>
+                    {openSection === index && (
+                      <div className="p-4 bg-white shadow-md">
+                        <p>{chapter.details}</p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

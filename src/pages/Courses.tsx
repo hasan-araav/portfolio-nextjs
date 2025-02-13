@@ -34,7 +34,7 @@ const courses = {
 
 export default function Courses() {
   return (
-    <div className="pt-16 bg-amber-50">
+    <div className=" bg-amber-50">
       {/* Hero Section */}
       <div className="bg-zinc-900 text-amber-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
