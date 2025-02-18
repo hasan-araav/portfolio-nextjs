@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { Calendar, Clock, User, Tag } from 'lucide-react';
+import { Calendar, Clock, User, Tag, QuoteIcon } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -55,7 +55,28 @@ const VideoPreview = ({ embedUrl }) => {
   );
 };
 
-// Process content to transform code blocks and videos into previews
+// Quote Preview Component
+const QuotePreview = ({ quote, author, role }) => {
+  return (
+    <div className="my-8 relative">
+      <div className="absolute -left-4 top-0 text-amber-400/20">
+        <QuoteIcon size={48} />
+      </div>
+      <blockquote className="pl-12 pr-4 py-6 bg-amber-50 border-l-4 border-amber-400 rounded-r-lg">
+        <p className="text-xl font-serif italic text-zinc-800 mb-4">{quote}</p>
+        <footer className="flex items-center gap-2">
+          <div className="h-px w-8 bg-amber-400/50"></div>
+          <cite className="not-italic">
+            <span className="font-semibold text-zinc-900">{author}</span>
+            {role && <span className="text-zinc-600 ml-2">• {role}</span>}
+          </cite>
+        </footer>
+      </blockquote>
+    </div>
+  );
+};
+
+// Process content to transform code blocks, videos, and quotes into previews
 const ProcessedContent = ({ content }) => {
   const parseContent = () => {
     const parts = [];
@@ -69,7 +90,7 @@ const ProcessedContent = ({ content }) => {
           const language = Array.from(code.classList)
             .find(cls => cls.startsWith('language-'))
             ?.replace('language-', '') || 'plaintext';
-
+          
           parts.push({
             type: 'code',
             content: code.textContent,
@@ -80,6 +101,17 @@ const ProcessedContent = ({ content }) => {
         parts.push({
           type: 'video',
           embedUrl: node.src
+        });
+      } else if (node.nodeName === 'BLOCKQUOTE') {
+        const quoteText = node.querySelector('p')?.textContent || '';
+        const author = node.querySelector('cite .author')?.textContent || '';
+        const role = node.querySelector('cite .role')?.textContent || '';
+        
+        parts.push({
+          type: 'quote',
+          quote: quoteText,
+          author,
+          role
         });
       } else {
         parts.push({
@@ -102,6 +134,8 @@ const ProcessedContent = ({ content }) => {
             <CodePreview code={part.content} language={part.language} />
           ) : part.type === 'video' ? (
             <VideoPreview embedUrl={part.embedUrl} />
+          ) : part.type === 'quote' ? (
+            <QuotePreview quote={part.quote} author={part.author} role={part.role} />
           ) : (
             <div dangerouslySetInnerHTML={{ __html: part.content }} />
           )}
@@ -122,6 +156,13 @@ const blogData = {
     content: `
       <h2>Introduction</h2>
       <p>Clean code is not just about making your code work; it's about making it work elegantly and efficiently. In this article, we'll explore the principles that make code truly clean and maintainable.</p>
+
+
+      <blockquote>
+        <p>Any fool can write code that a computer can understand. Good programmers write code that humans can understand.</p>
+        <cite><span class="author">Martin Fowler</span> <span class="role">Software Developer and Author</span></cite>
+      </blockquote>
+
 
       <h2>Video Tutorial</h2>
       <iframe 

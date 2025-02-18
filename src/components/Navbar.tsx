@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Terminal, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom'
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +15,7 @@ export default function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
+    { name: 'Home', href: '/' },
     { name: 'About', href: '#about' },
     { name: 'Courses', href: '#courses' },
     { name: 'Blog', href: '#blog' },
@@ -43,15 +44,16 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <button
+              <Link
                 key={link.name}
+                to={link.href}
                 onClick={() => scrollToSection(link.href)}
                 className={`text-sm font-medium transition-colors ${
                   isScrolled ? 'text-amber-50 hover:text-amber-400' : 'text-amber-50 hover:text-amber-400'
                 }`}
               >
                 {link.name}
-              </button>
+              </Link>
             ))}
           </div>
 
